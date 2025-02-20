@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - main
+  push:
+    branches:
+      - main  # Ensures CI runs on merges too
 
 jobs:
   test:
@@ -24,4 +27,11 @@ jobs:
 
       - name: Run Tests
         run: |
-          pytest
+          pytest > test_results.txt
+
+      - name: Upload Test Results
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: test_results.txt
