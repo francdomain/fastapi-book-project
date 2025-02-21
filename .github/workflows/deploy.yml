@@ -101,7 +101,7 @@ jobs:
 
             echo "Deploying with zero-downtime..."
             docker stop fastapi-app-2 2>/dev/null || true
-            docker run -d -p 8001:8000 --name fastapi-app-2 francdocmain/fastapi-app:latest
+            docker run -d -p 8001:8000 --name fastapi-app-2 "${{ secrets.DOCKER_USERNAME }}"/fastapi-app:latest
 
             sleep 10
 
