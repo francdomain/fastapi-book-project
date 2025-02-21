@@ -54,14 +54,30 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Copy Docker Setup Script to EC2
+      - name: Copy Setup Script to EC2
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           source: "scripts/ec2-setup.sh"
-          target: "/home/ubuntu/ec2-setup.sh"
+          target: "/home/ubuntu/"
+
+      - name: Verify Script on EC2 and Make Executable
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            echo "Verifying script exists..."
+            if [ ! -f /home/ubuntu/ec2-setup.sh ]; then
+              echo "❌ Script not found! Exiting..."
+              exit 1
+            fi
+            echo "✅ Script found! Making it executable..."
+            chmod +x /home/ubuntu/ec2-setup.sh
+            ls -l /home/ubuntu/ec2-setup.sh
 
       - name: Run Docker Setup Script on EC2
         uses: appleboy/ssh-action@master
@@ -70,7 +86,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
-            chmod +x /home/ubuntu/ec2-setup.sh
+            echo "Running EC2 setup script..."
             sudo /home/ubuntu/ec2-setup.sh
 
       - name: SSH into EC2 and Deploy
