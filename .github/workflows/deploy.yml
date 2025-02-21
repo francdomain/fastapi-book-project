@@ -71,15 +71,15 @@ jobs:
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
             echo "Verifying script exists..."
-            if [ ! -f /home/ubuntu/ec2-setup.sh ]; then
+            if [ ! -f /home/ubuntu/scripts/ec2-setup.sh ]; then
               echo "❌ Script not found! Exiting..."
               exit 1
             fi
             echo "✅ Script found! Making it executable..."
-            chmod +x /home/ubuntu/ec2-setup.sh
-            ls -l /home/ubuntu/ec2-setup.sh
+            chmod +x /home/ubuntu/scripts/ec2-setup.sh
+            ls -l /home/ubuntu/scripts/ec2-setup.sh
 
-      - name: Run Docker Setup Script on EC2
+      - name: Run Setup Script on EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -87,7 +87,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
             echo "Running EC2 setup script..."
-            sudo /home/ubuntu/ec2-setup.sh
+            sudo /home/ubuntu/scripts/ec2-setup.sh
 
       - name: SSH into EC2 and Deploy
         uses: appleboy/ssh-action@master
